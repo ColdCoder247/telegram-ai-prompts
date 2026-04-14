@@ -42,17 +42,20 @@ jobs:
               "$DATE" "$MESSAGE" "$CTA")
 
           else
-            # 🌙 EVENING MESSAGE (--- SEPARATOR BASED)
+            # 🌙 EVENING MESSAGE (FIXED WITH csplit)
 
             INTRO=("🌙 Time to Reflect" "🧾 End Your Day Strong" "📊 Daily Check-In")
             RANDOM_INTRO=${INTRO[$RANDOM % ${#INTRO[@]}]}
 
-            # ✅ Robust parsing using --- separator
-            ENDDAY=$(awk 'BEGIN{RS="---"} 
-              {
-                gsub(/^\n+|\n+$/,""); 
-                if(length>0) print
-              }' prompts/endday.txt | shuf -n 1)
+            # ✅ BULLETPROOF BLOCK SPLIT
+            csplit -s -f part_ prompts/endday.txt '/---/' '{*}' >/dev/null 2>&1
+
+            FILES=(part_*)
+            RANDOM_FILE=${FILES[$RANDOM % ${#FILES[@]}]}
+
+            ENDDAY=$(cat "$RANDOM_FILE")
+
+            rm part_*
 
             FINAL=$(printf "%s\n\n📅 %s\n\n━━━━━━━━━━━━━━━\n🌙 END OF DAY REFLECTION\n━━━━━━━━━━━━━━━\n\n%s" \
               "$RANDOM_INTRO" "$DATE" "$ENDDAY")

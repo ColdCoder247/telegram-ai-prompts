@@ -17,7 +17,7 @@ jobs:
       - name: Generate Message
         id: prompt
         run: |
-          HOUR=$(date +%H)
+          HOUR=01
           DATE=$(date "+%d %B %Y")
 
           # 🌅 MORNING MESSAGE

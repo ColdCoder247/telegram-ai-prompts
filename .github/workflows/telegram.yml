@@ -2,7 +2,8 @@ name: Smart Daily Telegram Prompt
 
 on:
   schedule:
-    - cron: '30 0 * * *'  # 6 AM IST
+    - cron: '30 0 * * *'   # 6:00 AM IST
+    - cron: '30 13 * * *'  # 7:00 PM IST
   workflow_dispatch:
 
 jobs:
@@ -13,43 +14,51 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Generate Smart Prompt
+      - name: Generate Message
         id: prompt
         run: |
-          DAY=$(date +%u)
-
-          # Category selection
-          if [ "$DAY" -eq 1 ]; then FILE="prompts/journal.txt"; CATEGORY="📝 JOURNAL"
-          elif [ "$DAY" -eq 2 ]; then FILE="prompts/motivation.txt"; CATEGORY="🚀 MOTIVATION"
-          elif [ "$DAY" -eq 3 ]; then FILE="prompts/deep.txt"; CATEGORY="🧠 DEEP THINKING"
-          elif [ "$DAY" -eq 4 ]; then FILE="prompts/journal.txt"; CATEGORY="📝 JOURNAL"
-          elif [ "$DAY" -eq 5 ]; then FILE="prompts/motivation.txt"; CATEGORY="🚀 MOTIVATION"
-          elif [ "$DAY" -eq 6 ]; then FILE="prompts/deep.txt"; CATEGORY="🧠 DEEP THINKING"
-          else FILE="prompts/journal.txt"; CATEGORY="🌟 SUNDAY REFLECTION"
-          fi
-
-          # Random prompt
-          MESSAGE=$(shuf -n 1 "$FILE")
-
-          # Random intro
-          INTRO=("🌅 Good Morning!" "🚀 Rise & Win!" "🔥 New Day, New Power!")
-          RANDOM_INTRO=${INTRO[$RANDOM % ${#INTRO[@]}]}
-
-          # Date
+          HOUR=$(date +%H)
           DATE=$(date "+%d %B %Y")
 
-          # Random CTA block
-          CTA=$(awk 'BEGIN{RS="";ORS="\n\n"}{print}' prompts/cta.txt | shuf -n 1)
+          # 🌅 MORNING MESSAGE
+          if [ "$HOUR" -lt 12 ]; then
 
-          # Final formatted message
-          FINAL=$(printf "%s\n\n📅 %s\n\n━━━━━━━━━━━━━━━\n%s PROMPT\n━━━━━━━━━━━━━━━\n\n%s\n\n%s" \
-            "$RANDOM_INTRO" "$DATE" "$CATEGORY" "$MESSAGE" "$CTA")
+            DAY=$(date +%u)
+
+            if [ "$DAY" -eq 1 ]; then FILE="prompts/journal.txt"
+            elif [ "$DAY" -eq 2 ]; then FILE="prompts/motivation.txt"
+            elif [ "$DAY" -eq 3 ]; then FILE="prompts/deep.txt"
+            elif [ "$DAY" -eq 4 ]; then FILE="prompts/journal.txt"
+            elif [ "$DAY" -eq 5 ]; then FILE="prompts/motivation.txt"
+            elif [ "$DAY" -eq 6 ]; then FILE="prompts/deep.txt"
+            else FILE="prompts/journal.txt"
+            fi
+
+            MESSAGE=$(shuf -n 1 "$FILE")
+
+            CTA=$(awk 'BEGIN{RS="";ORS="\n\n"}{print}' prompts/cta.txt | shuf -n 1)
+
+            FINAL=$(printf "🌅 Good Morning!\n\n📅 %s\n\n━━━━━━━━━━━━━━━\n📌 TODAY’S FOCUS\n━━━━━━━━━━━━━━━\n\n%s\n\n%s" \
+              "$DATE" "$MESSAGE" "$CTA")
+
+          else
+            # 🌙 EVENING MESSAGE (ONLY endday.txt)
+
+            INTRO=("🌙 Time to Reflect" "🧾 End Your Day Strong" "📊 Daily Check-In")
+            RANDOM_INTRO=${INTRO[$RANDOM % ${#INTRO[@]}]}
+
+            ENDDAY=$(awk 'BEGIN{RS="";ORS="\n\n"}{print}' prompts/endday.txt | shuf -n 1)
+
+            FINAL=$(printf "%s\n\n📅 %s\n\n━━━━━━━━━━━━━━━\n🌙 END OF DAY REFLECTION\n━━━━━━━━━━━━━━━\n\n%s" \
+              "$RANDOM_INTRO" "$DATE" "$ENDDAY")
+
+          fi
 
           echo "msg<<EOF" >> $GITHUB_OUTPUT
           echo "$FINAL" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Send Telegram Message to Multiple Groups
+      - name: Send Telegram Message
         run: |
           IFS=',' read -ra IDS <<< "${{ secrets.TELEGRAM_CHAT_IDS }}"
 

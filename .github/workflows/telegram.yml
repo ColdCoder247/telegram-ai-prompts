@@ -18,7 +18,7 @@ jobs:
         id: prompt
         run: |
           HOUR=$(date +%H)
-          DATE=$(date "+%d %B %Y")
+          DATE=$(TZ="Asia/Kolkata" date "+%d %B %Y")
 
           # 🌅 MORNING MESSAGE
           if [ "$HOUR" -lt 12 ]; then

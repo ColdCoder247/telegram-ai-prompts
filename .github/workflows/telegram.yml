@@ -38,8 +38,13 @@ jobs:
 
           echo "msg=$FINAL" >> $GITHUB_OUTPUT
 
-      - name: Send Telegram Message
+      - name: Send Telegram Message to Multiple Groups
         run: |
-          curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
-          -d chat_id=${{ secrets.TELEGRAM_CHAT_ID }} \
-          -d text="${{ steps.prompt.outputs.msg }}"
+          IFS=',' read -ra IDS <<< "${{ secrets.TELEGRAM_CHAT_IDS }}"
+
+          for CHAT_ID in "${IDS[@]}"
+          do
+            curl -s -X POST https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage \
+            -d chat_id=$CHAT_ID \
+            -d text="${{ steps.prompt.outputs.msg }}"
+          done

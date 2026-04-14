@@ -38,7 +38,7 @@ jobs:
 
             CTA=$(awk 'BEGIN{RS="";ORS="\n\n"}{print}' prompts/cta.txt | shuf -n 1)
 
-            FINAL=$(printf "🌅 Good Morning!\n\n📅 %s\n\n━━━━━━━━━━━━━━━\n📌 TODAY’S FOCUS\n━━━━━━━━━━━━━━━\n\n%s\n\n%s" \
+            FINAL=$(printf "🌅 Good Morning!\n\n📅 %s\n\n━━━━━━━━━━━━━━━\n📌 SHARE TODAY’S GOALS\n━━━━━━━━━━━━━━━\n\n%s\n\n%s" \
               "$DATE" "$MESSAGE" "$CTA")
 
           else

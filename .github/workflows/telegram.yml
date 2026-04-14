@@ -36,25 +36,27 @@ jobs:
 
             MESSAGE=$(shuf -n 1 "$FILE")
 
-            CTA=$(awk 'BEGIN{RS="";ORS="\n\n"}{print}' prompts/cta.txt | shuf -n 1)
+            # ✅ CTA BLOCK PICK (FIXED)
+            csplit -s -f cta_part_ prompts/cta.txt '/---/' '{*}' >/dev/null 2>&1
+            CTA_FILES=(cta_part_*)
+            RANDOM_CTA_FILE=${CTA_FILES[$RANDOM % ${#CTA_FILES[@]}]}
+            CTA=$(cat "$RANDOM_CTA_FILE")
+            rm cta_part_*
 
-            FINAL=$(printf "🌅 Good Morning!\n\n📅 %s\n\n━━━━━━━━━━━━━━━\n📌 Share Your Today’s GOALS\n━━━━━━━━━━━━━━━\n\n%s\n\n%s" \
+            FINAL=$(printf "🌅 Good Morning!\n\n📅 %s\n\n━━━━━━━━━━━━━━━\n📌 TODAY’S FOCUS\n━━━━━━━━━━━━━━━\n\n%s\n\n%s" \
               "$DATE" "$MESSAGE" "$CTA")
 
           else
-            # 🌙 EVENING MESSAGE (FIXED WITH csplit)
+            # 🌙 EVENING MESSAGE
 
             INTRO=("🌙 Time to Reflect" "🧾 End Your Day Strong" "📊 Daily Check-In")
             RANDOM_INTRO=${INTRO[$RANDOM % ${#INTRO[@]}]}
 
-            # ✅ BULLETPROOF BLOCK SPLIT
+            # ✅ END DAY BLOCK PICK (FIXED)
             csplit -s -f part_ prompts/endday.txt '/---/' '{*}' >/dev/null 2>&1
-
             FILES=(part_*)
             RANDOM_FILE=${FILES[$RANDOM % ${#FILES[@]}]}
-
             ENDDAY=$(cat "$RANDOM_FILE")
-
             rm part_*
 
             FINAL=$(printf "%s\n\n📅 %s\n\n━━━━━━━━━━━━━━━\n🌙 END OF DAY REFLECTION\n━━━━━━━━━━━━━━━\n\n%s" \

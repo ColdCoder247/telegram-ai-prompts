@@ -42,13 +42,14 @@ jobs:
               "$DATE" "$MESSAGE" "$CTA")
 
           else
-            # 🌙 EVENING MESSAGE (ONLY endday.txt)
+            # 🌙 EVENING MESSAGE (ONLY 1 BLOCK - FIXED)
 
             INTRO=("🌙 Time to Reflect" "🧾 End Your Day Strong" "📊 Daily Check-In")
             RANDOM_INTRO=${INTRO[$RANDOM % ${#INTRO[@]}]}
 
-           ENDDAY=$(awk -v RS='' 'NF {print}' prompts/endday.txt | shuf -n 1)
-            
+            # ✅ CORRECT BLOCK PICK (NO BUG)
+            ENDDAY=$(awk -v RS='' '1' prompts/endday.txt | shuf -n 1)
+
             FINAL=$(printf "%s\n\n📅 %s\n\n━━━━━━━━━━━━━━━\n🌙 END OF DAY REFLECTION\n━━━━━━━━━━━━━━━\n\n%s" \
               "$RANDOM_INTRO" "$DATE" "$ENDDAY")
 

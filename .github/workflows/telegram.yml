@@ -47,7 +47,7 @@ jobs:
             INTRO=("🌙 Time to Reflect" "🧾 End Your Day Strong" "📊 Daily Check-In")
             RANDOM_INTRO=${INTRO[$RANDOM % ${#INTRO[@]}]}
 
-            ENDDAY=$(sed '/^$/d' prompts/endday.txt | awk 'BEGIN{RS="";ORS="\n\n"}1' | shuf -n 1)
+           ENDDAY=$(awk -v RS='' 'NF {print}' prompts/endday.txt | shuf -n 1)
             
             FINAL=$(printf "%s\n\n📅 %s\n\n━━━━━━━━━━━━━━━\n🌙 END OF DAY REFLECTION\n━━━━━━━━━━━━━━━\n\n%s" \
               "$RANDOM_INTRO" "$DATE" "$ENDDAY")

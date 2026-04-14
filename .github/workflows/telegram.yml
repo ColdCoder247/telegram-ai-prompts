@@ -18,25 +18,45 @@ jobs:
         run: |
           DAY=$(date +%u)
 
-          if [ "$DAY" -eq 1 ]; then FILE="prompts/journal.txt"; CATEGORY="📝 Journal"
-          elif [ "$DAY" -eq 2 ]; then FILE="prompts/motivation.txt"; CATEGORY="🚀 Motivation"
-          elif [ "$DAY" -eq 3 ]; then FILE="prompts/deep.txt"; CATEGORY="🧠 Deep Thinking"
-          elif [ "$DAY" -eq 4 ]; then FILE="prompts/journal.txt"; CATEGORY="📝 Journal"
-          elif [ "$DAY" -eq 5 ]; then FILE="prompts/motivation.txt"; CATEGORY="🚀 Motivation"
-          elif [ "$DAY" -eq 6 ]; then FILE="prompts/deep.txt"; CATEGORY="🧠 Deep Thinking"
-          else FILE="prompts/journal.txt"; CATEGORY="🌟 Sunday Reflection"
+          # Select category based on day
+          if [ "$DAY" -eq 1 ]; then FILE="prompts/journal.txt"; CATEGORY="📝 JOURNAL"
+          elif [ "$DAY" -eq 2 ]; then FILE="prompts/motivation.txt"; CATEGORY="🚀 MOTIVATION"
+          elif [ "$DAY" -eq 3 ]; then FILE="prompts/deep.txt"; CATEGORY="🧠 DEEP THINKING"
+          elif [ "$DAY" -eq 4 ]; then FILE="prompts/journal.txt"; CATEGORY="📝 JOURNAL"
+          elif [ "$DAY" -eq 5 ]; then FILE="prompts/motivation.txt"; CATEGORY="🚀 MOTIVATION"
+          elif [ "$DAY" -eq 6 ]; then FILE="prompts/deep.txt"; CATEGORY="🧠 DEEP THINKING"
+          else FILE="prompts/journal.txt"; CATEGORY="🌟 SUNDAY REFLECTION"
           fi
 
+          # Pick random prompt
           MESSAGE=$(shuf -n 1 $FILE)
 
+          # Random intro
           INTRO=("🌅 Good Morning!" "🚀 Rise & Win!" "🔥 New Day, New Power!")
           RANDOM_INTRO=${INTRO[$RANDOM % ${#INTRO[@]}]}
 
+          # Date
           DATE=$(date "+%d %B %Y")
 
-          FINAL="$RANDOM_INTRO\n📅 $DATE\n\n$CATEGORY Prompt:\n\n$MESSAGE"
+          # Pick random CTA block (multi-line)
+          CTA=$(awk 'BEGIN{RS="";ORS="\n\n"}{print}' prompts/cta.txt | shuf -n 1)
 
-          echo "msg=$FINAL" >> $GITHUB_OUTPUT
+          # Final message (clean formatted)
+          FINAL="$RANDOM_INTRO
+
+📅 $DATE
+
+━━━━━━━━━━━━━━━
+$CATEGORY PROMPT
+━━━━━━━━━━━━━━━
+
+$MESSAGE
+
+$CTA"
+
+          echo "msg<<EOF" >> $GITHUB_OUTPUT
+          echo "$FINAL" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Send Telegram Message to Multiple Groups
         run: |

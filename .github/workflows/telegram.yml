@@ -17,7 +17,7 @@ jobs:
       - name: Generate Message
         id: prompt
         run: |
-          HOUR=01
+          HOUR=$(date +%H)
           DATE=$(TZ="Asia/Kolkata" date "+%d %B %Y")
 
           # 🌅 MORNING MESSAGE
@@ -43,7 +43,7 @@ jobs:
             CTA=$(cat "$RANDOM_CTA_FILE")
             rm cta_part_*
 
-            FINAL=$(printf "🌅 Good Morning!\n\n📅 %s\n\n━━━━━━━━━━━━━━━\n📌 TODAY’S FOCUS\n━━━━━━━━━━━━━━━\n\n%s\n\n%s" \
+            FINAL=$(printf "🌅 Good Morning!\n\n📅 %s\n\n━━━━━━━━━━━━━━━\n📌 SHARE YOUR TODAY’S FOCUS GOALS\n━━━━━━━━━━━━━━━\n\n%s\n\n%s" \
               "$DATE" "$MESSAGE" "$CTA")
 
           else

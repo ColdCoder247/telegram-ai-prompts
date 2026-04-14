@@ -17,7 +17,7 @@ jobs:
       - name: Generate Message
         id: prompt
         run: |
-          HOUR=01
+          HOUR=$(date +%H)
           DATE=$(date "+%d %B %Y")
 
           # 🌅 MORNING MESSAGE
@@ -38,7 +38,7 @@ jobs:
 
             CTA=$(awk 'BEGIN{RS="";ORS="\n\n"}{print}' prompts/cta.txt | shuf -n 1)
 
-            FINAL=$(printf "🌅 Good Morning!\n\n📅 %s\n\n━━━━━━━━━━━━━━━\n📌 SHARE TODAY’S GOALS\n━━━━━━━━━━━━━━━\n\n%s\n\n%s" \
+            FINAL=$(printf "🌅 Good Morning!\n\n📅 %s\n\n━━━━━━━━━━━━━━━\n📌 Share Your Today’s GOALS\n━━━━━━━━━━━━━━━\n\n%s\n\n%s" \
               "$DATE" "$MESSAGE" "$CTA")
 
           else
